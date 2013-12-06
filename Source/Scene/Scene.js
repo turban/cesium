@@ -39,7 +39,8 @@ define([
         './Primitive',
         './PerInstanceColorAppearance',
         './SunPostProcess',
-        './CreditDisplay'
+        './CreditDisplay',
+        '../ThirdParty/wtf-trace'
     ], function(
         CesiumMath,
         Color,
@@ -80,7 +81,8 @@ define([
         Primitive,
         PerInstanceColorAppearance,
         SunPostProcess,
-        CreditDisplay) {
+        CreditDisplay,
+        WTF) {
     "use strict";
 
     /**
@@ -478,7 +480,11 @@ define([
     var scratchCullingVolume = new CullingVolume();
     var distances = new Interval();
 
+    var createPotentiallyVisibleSetWtf = WTF.trace.events.createScope('createPotentiallyVisibleSet');
+
     function createPotentiallyVisibleSet(scene, listNames, pick) {
+        var scope = createPotentiallyVisibleSetWtf();
+
         var commandLists = scene._commandList;
         var cullingVolume = scene._frameState.cullingVolume;
         var camera = scene._camera;
@@ -569,6 +575,8 @@ define([
             updateFrustums(near, far, farToNearRatio, numFrustums, frustumCommandsList);
             createPotentiallyVisibleSet(scene, listNames, pick);
         }
+
+        return WTF.trace.leaveScope(scope);
     }
 
     function createFrustumDebugFragmentShaderSource(command) {
@@ -681,7 +689,11 @@ define([
                    (!defined(occluder) || occluder.isBoundingSphereVisible(boundingVolume)))));
     }
 
+    var executeCommandsWtf = WTF.trace.events.createScope('executeCommands');
+
     function executeCommands(scene, passState, clearColor) {
+        var scope = executeCommandsWtf();
+
         var frameState = scene._frameState;
         var camera = scene._camera;
         var frustum = camera.frustum.clone();
@@ -705,7 +717,6 @@ define([
         var skyAtmosphereCommand = (frameState.passes.color && defined(scene.skyAtmosphere)) ? scene.skyAtmosphere.update(context, frameState) : undefined;
         var sunCommand = (frameState.passes.color && defined(scene.sun)) ? scene.sun.update(context, frameState) : undefined;
         var sunVisible = isVisible(sunCommand, frameState);
-
 
         if (sunVisible && scene.sunBloom) {
             passState.framebuffer = scene._sunPostProcess.update(context);
@@ -762,9 +773,15 @@ define([
                 executeCommand(commands[j], scene, context, passState);
             }
         }
+
+        return WTF.trace.leaveScope(scope);
     }
 
+    var executeOverlayCommandsWtf = WTF.trace.events.createScope('executeOverlayCommands');
+
     function executeOverlayCommands(scene, passState) {
+        var scope = executeOverlayCommandsWtf();
+
         var context = scene._context;
         var commandLists = scene._commandList;
         var length = commandLists.length;
@@ -775,9 +792,15 @@ define([
                 commandList[j].execute(context, passState);
             }
         }
+
+        return WTF.trace.leaveScope(scope);
     }
 
+    var updatePrimitivesWtf = WTF.trace.events.createScope('updatePrimitives');
+
     function updatePrimitives(scene) {
+        var scope = updatePrimitivesWtf();
+
         var context = scene._context;
         var frameState = scene._frameState;
         var commandList = scene._commandList;
@@ -787,6 +810,8 @@ define([
         if (defined(scene.moon)) {
             scene.moon.update(context, frameState, commandList);
         }
+
+        return WTF.trace.leaveScope(scope);
     }
 
     function executeEvents(frameState) {
@@ -817,11 +842,15 @@ define([
 
     var renderListNames = ['opaqueList', 'translucentList'];
 
+    var sceneRenderWtf = WTF.trace.events.createScope('Scene#render');
+
     /**
      * DOC_TBA
      * @memberof Scene
      */
     Scene.prototype.render = function(time) {
+        var scope = sceneRenderWtf();
+
         if (!defined(time)) {
             time = new JulianDate();
         }
@@ -849,6 +878,8 @@ define([
         frameState.creditDisplay.endFrame();
         context.endFrame();
         executeEvents(frameState);
+
+        return WTF.trace.leaveScope(scope);
     };
 
     var orthoPickingFrustum = new OrthographicFrustum();
@@ -931,6 +962,8 @@ define([
     var scratchRectangle = new BoundingRectangle(0.0, 0.0, rectangleWidth, rectangleHeight);
     var scratchColorZero = new Color(0.0, 0.0, 0.0, 0.0);
 
+    var scenePickWtf = WTF.trace.events.createScope('Scene#pick');
+
     /**
      * Returns an object with a `primitive` property that contains the first (top) primitive in the scene
      * at a particular window coordinate or undefined if nothing is at the location. Other properties may
@@ -946,6 +979,8 @@ define([
      *
      */
     Scene.prototype.pick = function(windowPosition) {
+        var scope = scenePickWtf();
+
         if(!defined(windowPosition)) {
             throw new DeveloperError('windowPosition is undefined.');
         }
@@ -978,7 +1013,8 @@ define([
         var object = this._pickFramebuffer.end(scratchRectangle);
         context.endFrame();
         executeEvents(frameState);
-        return object;
+
+        return WTF.trace.leaveScope(scope, object);
     };
 
     /**
