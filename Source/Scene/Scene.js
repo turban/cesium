@@ -481,6 +481,7 @@ define([
     var distances = new Interval();
 
     var createPotentiallyVisibleSetWtf = WTF.trace.events.createScope('createPotentiallyVisibleSet');
+    var commandsWtf = WTF.trace.events.createInstance('f(uint32 totalcommands, uint32 visiblecommands)', WTF.data.EventFlag.APPEND_SCOPE_DATA);
 
     function createPotentiallyVisibleSet(scene, listNames, pick) {
         var scope = createPotentiallyVisibleSetWtf();
@@ -521,6 +522,9 @@ define([
         }
         cullingVolume = scratchCullingVolume;
 
+        var totalCommands = 0;
+        var visibleCommands = 0;
+
         var length = commandLists.length;
         var listNameLength = listNames.length;
         for (var i = 0; i < listNameLength; ++i) {
@@ -528,6 +532,7 @@ define([
             for (var j = 0; j < length; ++j) {
                 var commandList = !pick ? commandLists[j][listName] : commandLists[j].pickList[listName];
                 var commandListLength = commandList.length;
+                totalCommands += commandListLength;
                 for (var k = 0; k < commandListLength; ++k) {
                     var command = commandList[k];
                     var boundingVolume = command.boundingVolume;
@@ -551,6 +556,7 @@ define([
                     }
 
                     insertIntoBin(scene, command, distances);
+                    ++visibleCommands;
                 }
             }
         }
@@ -576,6 +582,7 @@ define([
             createPotentiallyVisibleSet(scene, listNames, pick);
         }
 
+        commandsWtf(totalCommands, visibleCommands);
         return WTF.trace.leaveScope(scope);
     }
 
