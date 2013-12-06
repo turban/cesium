@@ -28,9 +28,9 @@
  *
  * @author benvanik@google.com (Ben Vanik)
  */
+define(function() {
 
-
-(function(global, exports) {
+var WTF = (function(global, exports) {
 
 // NOTE: this file is kept structurally similar to wtf-trace-closure.js.
 //       It should not deviate except where necessary. I'd really like to
@@ -780,7 +780,10 @@ WTF.trace.instrumentType = WTF.PRESENT ?
 WTF.trace.instrumentTypeSimple = WTF.PRESENT ?
     global['wtf']['trace']['instrumentTypeSimple'] : nullFunction;
 
-
+return WTF;
 })(
     this,
     (typeof exports === 'undefined' ? this['WTF'] = {} : exports));
+
+    return WTF;
+});
