@@ -697,6 +697,8 @@ define([
     }
 
     var executeCommandsWtf = WTF.trace.events.createScope('executeCommands');
+    var executeCommandsFrustumWtf = WTF.trace.events.createScope('frustum');
+    var executeCommandsFrustumStatsWtf = WTF.trace.events.createInstance('executeCommands_frustum(uint32 commands)', WTF.data.EventFlag.APPEND_SCOPE_DATA);
 
     function executeCommands(scene, passState, clearColor) {
         var scope = executeCommandsWtf();
@@ -765,6 +767,8 @@ define([
         var frustumCommandsList = scene._frustumCommandsList;
         var numFrustums = frustumCommandsList.length;
         for (var i = 0; i < numFrustums; ++i) {
+            var frustumScope = executeCommandsFrustumWtf();
+
             clearDepthStencil.execute(context, passState);
 
             var index = numFrustums - i - 1;
@@ -779,6 +783,9 @@ define([
             for (var j = 0; j < length; ++j) {
                 executeCommand(commands[j], scene, context, passState);
             }
+
+            executeCommandsFrustumStatsWtf(length);
+            WTF.trace.leaveScope(frustumScope);
         }
 
         return WTF.trace.leaveScope(scope);
