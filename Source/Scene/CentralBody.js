@@ -42,8 +42,7 @@ define([
         '../Shaders/CentralBodyVS',
         '../Shaders/CentralBodyVSDepth',
         '../Shaders/CentralBodyVSPole',
-        '../ThirdParty/when',
-        '../ThirdParty/wtf-trace'
+        '../ThirdParty/when'
     ], function(
         buildModuleUrl,
         combine,
@@ -87,8 +86,7 @@ define([
         CentralBodyVS,
         CentralBodyVSDepth,
         CentralBodyVSPole,
-        when,
-        WTF) {
+        when) {
     "use strict";
 
     /**
@@ -528,23 +526,19 @@ define([
         }
     }
 
-    var centralBodyUpdateWtf = WTF.trace.events.createScope('CentralBody#update');
-
     /**
      * @private
      */
     CentralBody.prototype.update = function(context, frameState, commandList) {
-        var scope = centralBodyUpdateWtf();
-
         if (!this.show) {
-            return WTF.trace.leaveScope(scope);
+            return;
         }
 
         var width = context.getDrawingBufferWidth();
         var height = context.getDrawingBufferHeight();
 
         if (width === 0 || height === 0) {
-            return WTF.trace.leaveScope(scope);
+            return;
         }
 
         var mode = frameState.mode;
@@ -803,8 +797,6 @@ define([
         if (!commandLists.empty()) {
             commandList.push(commandLists);
         }
-
-        return WTF.trace.leaveScope(scope);
     };
 
     /**

@@ -481,7 +481,7 @@ define([
     var distances = new Interval();
 
     var createPotentiallyVisibleSetWtf = WTF.trace.events.createScope('createPotentiallyVisibleSet');
-    var commandsWtf = WTF.trace.events.createInstance('f(uint32 totalcommands, uint32 visiblecommands)', WTF.data.EventFlag.APPEND_SCOPE_DATA);
+    var commandsWtf = WTF.trace.events.createInstance('Scene_createPotentiallyVisibleSet(uint32 totalcommands, uint32 visiblecommands)', WTF.data.EventFlag.APPEND_SCOPE_DATA);
 
     function createPotentiallyVisibleSet(scene, listNames, pick) {
         var scope = createPotentiallyVisibleSetWtf();
