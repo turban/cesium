@@ -1094,7 +1094,6 @@ define([
      * @returns {Object} Object containing the picked primitive.
      *
      * @exception {DeveloperError} windowPosition is undefined.
-     *
      */
     Scene.prototype.pick = function(windowPosition) {
         var scope = scenePickWtf();
