@@ -1,13 +1,12 @@
 /*global define*/
 define([
-        '../Core/defaultValue',
-        '../Core/defined',
-        '../Core/destroyObject',
         '../Core/BoundingSphere',
         '../Core/Cartesian2',
         '../Core/Cartesian3',
         '../Core/Cartesian4',
         '../Core/Cartographic',
+        '../Core/defined',
+        '../Core/destroyObject',
         '../Core/DeveloperError',
         '../Core/EllipsoidalOccluder',
         '../Core/FeatureDetection',
@@ -28,14 +27,13 @@ define([
         '../ThirdParty/when',
         '../ThirdParty/wtf-trace'
     ], function(
-        defaultValue,
-        defined,
-        destroyObject,
         BoundingSphere,
         Cartesian2,
         Cartesian3,
         Cartesian4,
         Cartographic,
+        defined,
+        destroyObject,
         DeveloperError,
         EllipsoidalOccluder,
         FeatureDetection,
@@ -86,7 +84,7 @@ define([
 
         this._layerOrderChanged = false;
 
-        var terrainTilingScheme = this._terrainProvider.getTilingScheme();
+        var terrainTilingScheme = this._terrainProvider.tilingScheme;
         this._levelZeroTiles = undefined;
 
         this._tilesToRenderByTextureCount = [];
@@ -103,7 +101,7 @@ define([
         // even if this value is 0.
         this._loadQueueTimeSlice = 5;
 
-        var ellipsoid = terrainTilingScheme.getEllipsoid();
+        var ellipsoid = terrainTilingScheme.ellipsoid;
         this._ellipsoidalOccluder = new EllipsoidalOccluder(ellipsoid, Cartesian3.ZERO);
 
         this._debug = {
@@ -369,8 +367,8 @@ define([
 
         // We can't render anything before the level zero tiles exist.
         if (!defined(surface._levelZeroTiles)) {
-            if (surface._terrainProvider.isReady()) {
-                var terrainTilingScheme = surface._terrainProvider.getTilingScheme();
+            if (surface._terrainProvider.ready) {
+                var terrainTilingScheme = surface._terrainProvider.tilingScheme;
                 surface._levelZeroTiles = terrainTilingScheme.createLevelZeroTiles();
             } else {
                 // Nothing to do until the terrain provider is ready.
@@ -380,7 +378,7 @@ define([
 
         var cameraPosition = frameState.camera.positionWC;
 
-        var ellipsoid = surface._terrainProvider.getTilingScheme().getEllipsoid();
+        var ellipsoid = surface._terrainProvider.tilingScheme.ellipsoid;
         var cameraPositionCartographic = ellipsoid.cartesianToCartographic(cameraPosition, scratchCamera);
 
         surface._ellipsoidalOccluder.cameraPosition = cameraPosition;
@@ -468,8 +466,6 @@ define([
         if (frameState.mode === SceneMode.SCENE2D) {
             return screenSpaceError2D(surface, context, frameState, cameraPosition, cameraPositionCartographic, tile);
         }
-
-        var extent = tile.extent;
 
         var maxGeometricError = surface._terrainProvider.getLevelMaximumGeometricError(tile.level);
 
@@ -1050,7 +1046,7 @@ define([
             return;
         }
 
-        tile.meshForWireframePromise = tile.terrainData.createMesh(surface._terrainProvider.getTilingScheme(), tile.x, tile.y, tile.level);
+        tile.meshForWireframePromise = tile.terrainData.createMesh(surface._terrainProvider.tilingScheme, tile.x, tile.y, tile.level);
         if (!defined(tile.meshForWireframePromise)) {
             // deferrred
             return;
@@ -1070,19 +1066,19 @@ define([
         var creditDisplay = frameState.creditDisplay;
         var credit;
 
-        if (surface._terrainProvider.isReady()) {
-            credit = surface._terrainProvider.getCredit();
+        if (surface._terrainProvider.ready) {
+            credit = surface._terrainProvider.credit;
             if (defined(credit)) {
                 creditDisplay.addCredit(credit);
             }
         }
 
         var imageryLayerCollection = surface._imageryLayerCollection;
-        for ( var i = 0, len = imageryLayerCollection.getLength(); i < len; ++i) {
+        for ( var i = 0, len = imageryLayerCollection.length; i < len; ++i) {
             var layer = imageryLayerCollection.get(i);
             if (layer.show) {
-                if (layer.getImageryProvider().isReady()) {
-                    credit = layer.getImageryProvider().getCredit();
+                if (layer.imageryProvider.ready) {
+                    credit = layer.imageryProvider.credit;
                     if (defined(credit)) {
                         creditDisplay.addCredit(credit);
                     }

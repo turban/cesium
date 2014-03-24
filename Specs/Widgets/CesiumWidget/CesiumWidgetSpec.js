@@ -99,17 +99,17 @@ defineSuite([
             imageryProvider : new TileCoordinatesImageryProvider()
         };
         widget = new CesiumWidget(container, options);
-        var imageryLayers = widget.centralBody.imageryLayerCollection;
-        expect(imageryLayers.getLength()).toEqual(1);
-        expect(imageryLayers.get(0).getImageryProvider()).toBe(options.imageryProvider);
+        var imageryLayers = widget.centralBody.imageryLayers;
+        expect(imageryLayers.length).toEqual(1);
+        expect(imageryLayers.get(0).imageryProvider).toBe(options.imageryProvider);
     });
 
     it('does not create an ImageryProvider if option is false', function() {
         widget = new CesiumWidget(container, {
             imageryProvider : false
         });
-        var imageryLayers = widget.centralBody.imageryLayerCollection;
-        expect(imageryLayers.getLength()).toEqual(0);
+        var imageryLayers = widget.centralBody.imageryLayers;
+        expect(imageryLayers.length).toEqual(0);
     });
 
     it('sets expected options terrainProvider', function() {

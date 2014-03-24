@@ -85,16 +85,16 @@ defineSuite([
         var imageryLayers = new ImageryLayerCollection();
         var viewModel = new BaseLayerPickerViewModel(imageryLayers, array);
 
-        expect(imageryLayers.getLength()).toEqual(0);
+        expect(imageryLayers.length).toEqual(0);
 
         viewModel.selectedItem = testProviderViewModel;
-        expect(imageryLayers.getLength()).toEqual(1);
-        expect(imageryLayers.get(0).getImageryProvider()).toBe(testProvider);
+        expect(imageryLayers.length).toEqual(1);
+        expect(imageryLayers.get(0).imageryProvider).toBe(testProvider);
 
         viewModel.selectedItem = testProviderViewModel2;
-        expect(imageryLayers.getLength()).toEqual(2);
-        expect(imageryLayers.get(0).getImageryProvider()).toBe(testProvider);
-        expect(imageryLayers.get(1).getImageryProvider()).toBe(testProvider2);
+        expect(imageryLayers.length).toEqual(2);
+        expect(imageryLayers.get(0).imageryProvider).toBe(testProvider);
+        expect(imageryLayers.get(1).imageryProvider).toBe(testProvider2);
     });
 
     it('settings selectedItem only removes layers added by view model', function() {
@@ -102,20 +102,20 @@ defineSuite([
         var imageryLayers = new ImageryLayerCollection();
         var viewModel = new BaseLayerPickerViewModel(imageryLayers, array);
 
-        expect(imageryLayers.getLength()).toEqual(0);
+        expect(imageryLayers.length).toEqual(0);
 
         viewModel.selectedItem = testProviderViewModel2;
-        expect(imageryLayers.getLength()).toEqual(2);
-        expect(imageryLayers.get(0).getImageryProvider()).toBe(testProvider);
-        expect(imageryLayers.get(1).getImageryProvider()).toBe(testProvider2);
+        expect(imageryLayers.length).toEqual(2);
+        expect(imageryLayers.get(0).imageryProvider).toBe(testProvider);
+        expect(imageryLayers.get(1).imageryProvider).toBe(testProvider2);
 
         imageryLayers.addImageryProvider(testProvider3, 1);
         imageryLayers.remove(imageryLayers.get(0));
 
         viewModel.selectedItem = undefined;
 
-        expect(imageryLayers.getLength()).toEqual(1);
-        expect(imageryLayers.get(0).getImageryProvider()).toBe(testProvider3);
+        expect(imageryLayers.length).toEqual(1);
+        expect(imageryLayers.get(0).imageryProvider).toBe(testProvider3);
     });
 
 

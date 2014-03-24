@@ -98,10 +98,10 @@ define([
                 var currentProviders = that._currentProviders;
                 var currentProvidersLength = currentProviders.length;
                 for (i = 0; i < currentProvidersLength; i++) {
-                    var layersLength = imageryLayers.getLength();
+                    var layersLength = imageryLayers.length;
                     for ( var x = 0; x < layersLength; x++) {
                         var layer = imageryLayers.get(x);
-                        if (layer.getImageryProvider() === currentProviders[i]) {
+                        if (layer.imageryProvider === currentProviders[i]) {
                             imageryLayers.remove(layer);
                             break;
                         }

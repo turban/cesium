@@ -86,7 +86,7 @@ defineSuite([
         testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
         visualizer.update(new JulianDate());
         var billboardCollection = scene.primitives.get(0);
-        expect(billboardCollection.getLength()).toEqual(0);
+        expect(billboardCollection.length).toEqual(0);
     });
 
     it('object with no position does not create a billboard.', function() {
@@ -99,7 +99,7 @@ defineSuite([
 
         visualizer.update(new JulianDate());
         var billboardCollection = scene.primitives.get(0);
-        expect(billboardCollection.getLength()).toEqual(0);
+        expect(billboardCollection.length).toEqual(0);
     });
 
     it('A DynamicPoint causes a Billboard to be created and updated.', function() {
@@ -109,7 +109,7 @@ defineSuite([
         visualizer = new DynamicPointVisualizer(scene, dynamicObjectCollection);
 
         var billboardCollection = scene.primitives.get(0);
-        expect(billboardCollection.getLength()).toEqual(0);
+        expect(billboardCollection.length).toEqual(0);
 
         var testObject = dynamicObjectCollection.getOrCreateObject('test');
         testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
@@ -124,14 +124,14 @@ defineSuite([
 
         visualizer.update(time);
 
-        expect(billboardCollection.getLength()).toEqual(1);
+        expect(billboardCollection.length).toEqual(1);
 
         var bb = billboardCollection.get(0);
 
         visualizer.update(time);
-        expect(bb.getShow()).toEqual(testObject.point.show.getValue(time));
-        expect(bb.getPosition()).toEqual(testObject.position.getValue(time));
-        expect(bb.getScaleByDistance()).toEqual(testObject.point.scaleByDistance.getValue(time));
+        expect(bb.show).toEqual(testObject.point.show.getValue(time));
+        expect(bb.position).toEqual(testObject.position.getValue(time));
+        expect(bb.scaleByDistance).toEqual(testObject.point.scaleByDistance.getValue(time));
         expect(bb._visualizerColor).toEqual(testObject.point.color.getValue(time));
         expect(bb._visualizerOutlineColor).toEqual(testObject.point.outlineColor.getValue(time));
         expect(bb._visualizerOutlineWidth).toEqual(testObject.point.outlineWidth.getValue(time));
@@ -147,9 +147,9 @@ defineSuite([
         point.outlineWidth.value = 12.5;
 
         visualizer.update(time);
-        expect(bb.getShow()).toEqual(testObject.point.show.getValue(time));
-        expect(bb.getPosition()).toEqual(testObject.position.getValue(time));
-        expect(bb.getScaleByDistance()).toEqual(testObject.point.scaleByDistance.getValue(time));
+        expect(bb.show).toEqual(testObject.point.show.getValue(time));
+        expect(bb.position).toEqual(testObject.position.getValue(time));
+        expect(bb.scaleByDistance).toEqual(testObject.point.scaleByDistance.getValue(time));
         expect(bb._visualizerColor).toEqual(testObject.point.color.getValue(time));
         expect(bb._visualizerOutlineColor).toEqual(testObject.point.outlineColor.getValue(time));
         expect(bb._visualizerOutlineWidth).toEqual(testObject.point.outlineWidth.getValue(time));
@@ -157,14 +157,14 @@ defineSuite([
 
         point.show = new ConstantProperty(false);
         visualizer.update(time);
-        expect(bb.getShow()).toEqual(testObject.point.show.getValue(time));
+        expect(bb.show).toEqual(testObject.point.show.getValue(time));
     });
 
     it('clear hides billboards.', function() {
         var dynamicObjectCollection = new DynamicObjectCollection();
         visualizer = new DynamicPointVisualizer(scene, dynamicObjectCollection);
         var billboardCollection = scene.primitives.get(0);
-        expect(billboardCollection.getLength()).toEqual(0);
+        expect(billboardCollection.length).toEqual(0);
         var testObject = dynamicObjectCollection.getOrCreateObject('test');
         var time = new JulianDate();
 
@@ -173,14 +173,14 @@ defineSuite([
         point.show = new ConstantProperty(true);
         visualizer.update(time);
 
-        expect(billboardCollection.getLength()).toEqual(1);
+        expect(billboardCollection.length).toEqual(1);
         var bb = billboardCollection.get(0);
 
         visualizer.update(time);
         //Clearing won't actually remove the billboard because of the
         //internal cache used by the visualizer, instead it just hides it.
         dynamicObjectCollection.removeAll();
-        expect(bb.getShow()).toEqual(false);
+        expect(bb.show).toEqual(false);
     });
 
     it('Visualizer sets dynamicObject property.', function() {
@@ -188,7 +188,7 @@ defineSuite([
         visualizer = new DynamicPointVisualizer(scene, dynamicObjectCollection);
 
         var billboardCollection = scene.primitives.get(0);
-        expect(billboardCollection.getLength()).toEqual(0);
+        expect(billboardCollection.length).toEqual(0);
 
         var testObject = dynamicObjectCollection.getOrCreateObject('test');
 
@@ -199,7 +199,7 @@ defineSuite([
         point.show = new ConstantProperty(true);
 
         visualizer.update(time);
-        expect(billboardCollection.getLength()).toEqual(1);
+        expect(billboardCollection.length).toEqual(1);
         var bb = billboardCollection.get(0);
         expect(bb.id).toEqual(testObject);
     });
@@ -223,13 +223,13 @@ defineSuite([
         var billboardCollection = scene.primitives.get(0);
 
         visualizer.update(time);
-        expect(billboardCollection.getLength()).toEqual(1);
+        expect(billboardCollection.length).toEqual(1);
         var bb = billboardCollection.get(0);
         expect(bb.id).toEqual(testObject);
 
         visualizer.setDynamicObjectCollection(dynamicObjectCollection2);
         visualizer.update(time);
-        expect(billboardCollection.getLength()).toEqual(1);
+        expect(billboardCollection.length).toEqual(1);
         bb = billboardCollection.get(0);
         expect(bb.id).toEqual(testObject2);
     });

@@ -56,12 +56,10 @@ defineSuite([
         polygon = new Polygon();
         polygon.ellipsoid = ellipsoid;
         polygon.granularity = CesiumMath.toRadians(20.0);
-        polygon.setPositions([
-            ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-50.0, -50.0, 0.0)),
+        polygon.positions = [ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-50.0, -50.0, 0.0)),
             ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(50.0, -50.0, 0.0)),
             ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(50.0, 50.0, 0.0)),
-            ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-50.0, 50.0, 0.0))
-        ]);
+            ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-50.0, 50.0, 0.0))];
         polygon.asynchronous = false;
 
         polylines = new PolylineCollection();
@@ -91,7 +89,7 @@ defineSuite([
     }
 
     function renderPolylineMaterial(material) {
-        polyline.setMaterial(material);
+        polyline.material = material;
 
         ClearCommand.ALL.execute(context);
         expect(context.readPixels()).toEqual([0, 0, 0, 0]);
@@ -451,12 +449,23 @@ defineSuite([
         expect(pixel).not.toEqual([0, 0, 0, 0]);
     });
 
-    it('create multiple materials from the same type', function() {
-        var material1 = Material.fromType('Color');
-        material1.uniforms.color = new Color(0.0, 1.0, 0.0, 1.0);
+    it('create material using fromType and overide default uniforms', function() {
+        var material1 = Material.fromType('Color', {
+            color : new Color(0.0, 1.0, 0.0, 1.0)
+        });
 
-        var material2 = Material.fromType('Color');
-        material2.uniforms.color = new Color(0.0, 0.0, 1.0, 1.0);
+        var pixel = renderMaterial(material1);
+        expect(pixel).toEqual([0, 255, 0, 255]);
+    });
+
+    it('create multiple materials from the same type', function() {
+        var material1 = Material.fromType('Color', {
+            color : new Color(0.0, 1.0, 0.0, 1.0)
+        });
+
+        var material2 = Material.fromType('Color', {
+            color : new Color(0.0, 0.0, 1.0, 1.0)
+        });
 
         expect(material1.shaderSource).toEqual(material2.shaderSource);
 

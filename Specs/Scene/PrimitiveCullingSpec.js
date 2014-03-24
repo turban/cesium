@@ -282,12 +282,10 @@ defineSuite([
         var polygon = new Polygon();
         polygon.ellipsoid = ellipsoid;
         polygon.granularity = CesiumMath.toRadians(20.0);
-        polygon.setPositions([
-                              ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-degree, -degree, 0.0)),
+        polygon.positions = [ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-degree, -degree, 0.0)),
                               ellipsoid.cartographicToCartesian(Cartographic.fromDegrees( degree, -degree, 0.0)),
                               ellipsoid.cartographicToCartesian(Cartographic.fromDegrees( degree,  degree, 0.0)),
-                              ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-degree,  degree, 0.0))
-                             ]);
+                              ellipsoid.cartographicToCartesian(Cartographic.fromDegrees(-degree,  degree, 0.0))];
         polygon.asynchronous = false;
         polygon.material.translucent = false;
         return polygon;
@@ -377,7 +375,7 @@ defineSuite([
         }));
 
         var billboards = new BillboardCollection();
-        billboards.setTextureAtlas(atlas);
+        billboards.textureAtlas = atlas;
         billboards.add({
             position : Ellipsoid.WGS84.cartographicToCartesian(new Cartographic.fromDegrees(-75.10, 39.57)),
             imageIndex : 0

@@ -1,6 +1,7 @@
 /*global define*/
 define([
         '../Core/defaultValue',
+        '../Core/defineProperties',
         '../Core/DeveloperError',
         '../Core/defined',
         '../Core/destroyObject',
@@ -14,6 +15,7 @@ define([
         './VerticalOrigin'
     ], function(
         defaultValue,
+        defineProperties,
         DeveloperError,
         defined,
         destroyObject,
@@ -76,8 +78,8 @@ define([
 
         var billboard = glyph.billboard;
         if (defined(billboard)) {
-            billboard.setShow(false);
-            billboard.setImageIndex(-1);
+            billboard.show = false;
+            billboard.imageIndex = -1;
             // Destroy pickId to allow setting _pickIdThis and _id when the billboard is reused.
             billboard._pickId = billboard._pickId && billboard._pickId.destroy();
             labelCollection._spareBillboards.push(billboard);
@@ -175,21 +177,21 @@ define([
                         glyph.billboard = billboard = labelCollection._billboardCollection.add();
                     }
 
-                    billboard.setShow(label._show);
-                    billboard.setPosition(label._position);
-                    billboard.setEyeOffset(label._eyeOffset);
-                    billboard.setPixelOffset(label._pixelOffset);
-                    billboard.setHorizontalOrigin(HorizontalOrigin.LEFT);
-                    billboard.setVerticalOrigin(label._verticalOrigin);
-                    billboard.setScale(label._scale);
+                    billboard.show = label._show;
+                    billboard.position = label._position;
+                    billboard.eyeOffset = label._eyeOffset;
+                    billboard.pixelOffset = label._pixelOffset;
+                    billboard.horizontalOrigin = HorizontalOrigin.LEFT;
+                    billboard.verticalOrigin = label._verticalOrigin;
+                    billboard.scale = label._scale;
                     billboard._pickIdThis = label;
                     billboard._id = label._id;
                     billboard._collection = label._labelCollection;
                 }
 
-                glyph.billboard.setImageIndex(glyphTextureInfo.index);
-                glyph.billboard.setTranslucencyByDistance(label._translucencyByDistance);
-                glyph.billboard.setPixelOffsetScaleByDistance(label._pixelOffsetScaleByDistance);
+                glyph.billboard.imageIndex = glyphTextureInfo.index;
+                glyph.billboard.translucencyByDistance = label._translucencyByDistance;
+                glyph.billboard.pixelOffsetScaleByDistance = label._pixelOffsetScaleByDistance;
             }
         }
 
@@ -307,7 +309,7 @@ define([
         this._textureAtlas = undefined;
 
         this._billboardCollection = new BillboardCollection();
-        this._billboardCollection.setDestroyTextureAtlas(false);
+        this._billboardCollection.destroyTextureAtlas = false;
 
         this._spareBillboards = [];
         this._glyphTextureCache = {};
@@ -363,6 +365,21 @@ define([
         this.debugShowBoundingVolume = defaultValue(options.debugShowBoundingVolume, false);
     };
 
+    defineProperties(LabelCollection.prototype, {
+        /**
+         * Returns the number of labels in this collection.  This is commonly used with
+         * {@link LabelCollection#get} to iterate over all the labels
+         * in the collection.
+         * @memberof LabelCollection.prototype
+         * @type {Number}
+         */
+        length : {
+            get : function() {
+                return this._labels.length;
+            }
+        }
+    });
+
     /**
      * Creates and adds a label with the specified initial properties to the collection.
      * The added label is returned so it can be modified or removed from the collection later.
@@ -373,8 +390,7 @@ define([
      *
      * @returns {Label} The label that was added to the collection.
      *
-     * @performance Calling <code>add</code> is expected constant time.  However, when
-     * {@link LabelCollection#update} is called, the collection's vertex buffer
+     * @performance Calling <code>add</code> is expected constant time.  However, the collection's vertex buffer
      * is rewritten; this operations is <code>O(n)</code> and also incurs
      * CPU to GPU overhead.  For best performance, add as many billboards as possible before
      * calling <code>update</code>.
@@ -383,7 +399,6 @@ define([
      *
      * @see LabelCollection#remove
      * @see LabelCollection#removeAll
-     * @see LabelCollection#update
      *
      * @example
      * // Example 1:  Add a label, specifying all the default values.
@@ -428,19 +443,17 @@ define([
      *
      * @returns {Boolean} <code>true</code> if the label was removed; <code>false</code> if the label was not found in the collection.
      *
-     * @performance Calling <code>remove</code> is expected constant time.  However, when
-     * {@link LabelCollection#update} is called, the collection's vertex buffer
+     * @performance Calling <code>remove</code> is expected constant time.  However, the collection's vertex buffer
      * is rewritten - an <code>O(n)</code> operation that also incurs CPU to GPU overhead.  For
      * best performance, remove as many labels as possible before calling <code>update</code>.
      * If you intend to temporarily hide a label, it is usually more efficient to call
-     * {@link Label#setShow} instead of removing and re-adding the label.
+     * {@link Label#show} instead of removing and re-adding the label.
      *
      * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
      *
      * @see LabelCollection#add
      * @see LabelCollection#removeAll
-     * @see LabelCollection#update
-     * @see Label#setShow
+     * @see Label#show
      *
      * @example
      * var l = labels.add(...);
@@ -470,7 +483,6 @@ define([
      *
      * @see LabelCollection#add
      * @see LabelCollection#remove
-     * @see LabelCollection#update
      *
      * @example
      * labels.add(...);
@@ -506,7 +518,7 @@ define([
      * Returns the label in the collection at the specified index.  Indices are zero-based
      * and increase as labels are added.  Removing a label shifts all labels after
      * it to the left, changing their indices.  This function is commonly used with
-     * {@link LabelCollection#getLength} to iterate over all the labels
+     * {@link LabelCollection#length} to iterate over all the labels
      * in the collection.
      *
      * @memberof LabelCollection
@@ -516,19 +528,19 @@ define([
      * @returns {Label} The label at the specified index.
      *
      * @performance Expected constant time.  If labels were removed from the collection and
-     * {@link LabelCollection#update} was not called, an implicit <code>O(n)</code>
+     * {@link Scene#render} was not called, an implicit <code>O(n)</code>
      * operation is performed.
      *
      * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
      *
-     * @see LabelCollection#getLength
+     * @see LabelCollection#length
      *
      * @example
      * // Toggle the show property of every label in the collection
-     * var len = labels.getLength();
+     * var len = labels.length;
      * for (var i = 0; i < len; ++i) {
      *   var l = billboards.get(i);
-     *   l.setShow(!l.getShow());
+     *   l.show = !l.show;
      * }
      */
     LabelCollection.prototype.get = function(index) {
@@ -542,35 +554,6 @@ define([
     };
 
     /**
-     * Returns the number of labels in this collection.  This is commonly used with
-     * {@link LabelCollection#get} to iterate over all the labels
-     * in the collection.
-     *
-     * @memberof LabelCollection
-     *
-     * @returns {Number} The number of labels in this collection.
-     *
-     * @performance Expected constant time.  If labels were removed from the collection and
-     * {@link LabelCollection#update} was not called, an implicit <code>O(n)</code>
-     * operation is performed.
-     *
-     * @exception {DeveloperError} This object was destroyed, i.e., destroy() was called.
-     *
-     * @see LabelCollection#get
-     *
-     * @example
-     * // Toggle the show property of every label in the collection
-     * var len = labels.getLength();
-     * for (var i = 0; i < len; ++i) {
-     *   var l = billboards.get(i);
-     *   l.setShow(!l.getShow());
-     * }
-     */
-    LabelCollection.prototype.getLength = function() {
-        return this._labels.length;
-    };
-
-    /**
      * @private
      */
     LabelCollection.prototype.update = function(context, frameState, commandList) {
@@ -581,7 +564,7 @@ define([
 
         if (!defined(this._textureAtlas)) {
             this._textureAtlas = context.createTextureAtlas();
-            billboardCollection.setTextureAtlas(this._textureAtlas);
+            billboardCollection.textureAtlas = this._textureAtlas;
         }
 
         var labelsToUpdate = this._labelsToUpdate;
