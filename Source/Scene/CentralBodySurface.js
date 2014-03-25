@@ -9,6 +9,7 @@ define([
         '../Core/destroyObject',
         '../Core/DeveloperError',
         '../Core/EllipsoidalOccluder',
+        '../Core/Extent',
         '../Core/FeatureDetection',
         '../Core/getTimestamp',
         '../Core/Intersect',
@@ -36,6 +37,7 @@ define([
         destroyObject,
         DeveloperError,
         EllipsoidalOccluder,
+        Extent,
         FeatureDetection,
         getTimestamp,
         Intersect,
@@ -565,11 +567,11 @@ define([
         var maximumHeight = tile.maximumHeight;
 
         if (frameState.mode !== SceneMode.SCENE3D) {
-            southwestCornerCartesian = frameState.scene2D.projection.project(tile.extent.getSouthwest(), southwestCornerScratch);
+            southwestCornerCartesian = frameState.scene2D.projection.project(Extent.getSouthwest(tile.extent), southwestCornerScratch);
             southwestCornerCartesian.z = southwestCornerCartesian.y;
             southwestCornerCartesian.y = southwestCornerCartesian.x;
             southwestCornerCartesian.x = 0.0;
-            northeastCornerCartesian = frameState.scene2D.projection.project(tile.extent.getNortheast(), northeastCornerScratch);
+            northeastCornerCartesian = frameState.scene2D.projection.project(Extent.getNortheast(tile.extent), northeastCornerScratch);
             northeastCornerCartesian.z = northeastCornerCartesian.y;
             northeastCornerCartesian.y = northeastCornerCartesian.x;
             northeastCornerCartesian.x = 0.0;
@@ -682,7 +684,7 @@ define([
             }
             for (var j = 0; j < tileSet.length; ++j) {
                 tile = tileSet[j];
-                if (tile.extent.contains(cartographicPick)) {
+                if (Extent.contains(tile.extent, cartographicPick)) {
                     result = tile;
                     break;
                 }
@@ -837,8 +839,8 @@ define([
                 var oneOverMercatorHeight = 0.0;
 
                 if (frameState.mode !== SceneMode.SCENE3D) {
-                    var southwest = projection.project(tile.extent.getSouthwest(), southwestScratch);
-                    var northeast = projection.project(tile.extent.getNortheast(), northeastScratch);
+                    var southwest = projection.project(Extent.getSouthwest(tile.extent), southwestScratch);
+                    var northeast = projection.project(Extent.getNortheast(tile.extent), northeastScratch);
 
                     tileExtent.x = southwest.x;
                     tileExtent.y = southwest.y;
