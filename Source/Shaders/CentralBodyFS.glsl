@@ -161,7 +161,7 @@ void main()
     diffuseIntensity = mix(1.0, diffuseIntensity, t);
     gl_FragColor = vec4(color.rgb * diffuseIntensity, color.a);
 #else
-    gl_FragColor = color;
+    gl_FragColor = vec4(color.r , color.g, color.b, color.a * 0.7);
 #endif
 }
 

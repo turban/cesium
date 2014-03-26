@@ -25,6 +25,7 @@ define([
         '../Core/Occluder',
         '../Core/PrimitiveType',
         '../Core/Transforms',
+        '../Renderer/BlendingState',
         '../Renderer/BufferUsage',
         '../Renderer/ClearCommand',
         '../Renderer/DepthFunction',
@@ -70,6 +71,7 @@ define([
         Occluder,
         PrimitiveType,
         Transforms,
+        BlendingState,
         BufferUsage,
         ClearCommand,
         DepthFunction,
@@ -566,12 +568,14 @@ define([
                     },
                     depthTest : {
                         enabled : true
-                    }
+                    },
+                    blending : BlendingState.ALPHA_BLEND
                 });
                 this._rsColorWithoutDepthTest = context.createRenderState({ // Write color, not depth
                     cull : {
                         enabled : true
-                    }
+                    },
+                    blending : BlendingState.ALPHA_BLEND
                 });
                 this._depthCommand.renderState = context.createRenderState({ // Write depth, not color
                     cull : {
