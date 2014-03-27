@@ -998,7 +998,7 @@ define([
                     command.primitiveType = PrimitiveType.TRIANGLES;
                     command.vertexArray = tile.vertexArray;
                     command.uniformMap = uniformMap;
-                    command.pass = Pass.OPAQUE;
+                    command.pass = Pass.TRANSLUCENT;
 
                     if (surface._debug.wireframe) {
                         createWireframeVertexArrayIfNecessary(context, surface, tile);
