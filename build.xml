@@ -592,4 +592,72 @@
 			<include name="*.css" />
 		</replace>
 	</target>
+
+
+	<target name="buildJotunheimen" depends="checkForNode">
+		<property name="jotunheimenDirectory" location="Apps/Jotunheimen" />
+		<property name="jotunheimenOutputDirectory" location="${buildDirectory}/Apps/Jotunheimen" />
+		<mkdir dir="${jotunheimenOutputDirectory}" />
+		<property name="relativeJotunheimenOutputDirectory" location="${jotunheimenOutputDirectory}" relative="true" basedir="${jotunheimenDirectory}" />
+
+		<!-- mainConfigFile is relative to the build.js file -->
+		<exec executable="${nodePath}" dir="${jotunheimenDirectory}">
+			<arg value="${rjsPath}" />
+			<arg value="-o" />
+			<arg value="${rjsOptions}" />
+			<arg value="optimize=uglify2" />
+			<arg value="pragmas.debug=false" />
+			<arg value="mainConfigFile=../Apps/Jotunheimen/JotunheimenStartup.js" />
+			<arg value="name=Jotunheimen/JotunheimenStartup" />
+			<arg value="out=${relativeJotunheimenOutputDirectory}/JotunheimenStartup.js" />
+		</exec>
+
+		<exec executable="${nodePath}" dir="${jotunheimenDirectory}">
+			<arg value="${rjsPath}" />
+			<arg value="-o" />
+			<arg value="${rjsOptions}" />
+			<arg value="cssIn=Jotunheimen.css" />
+			<arg value="out=${relativeJotunheimenOutputDirectory}/Jotunheimen.css" />
+		</exec>
+
+		<!-- Copy other app files -->
+		<copy todir="${jotunheimenOutputDirectory}">
+			<fileset dir="${jotunheimenDirectory}">
+				<exclude name="*.js" />
+				<exclude name="*.css" />
+			</fileset>
+		</copy>
+
+		<!-- Copy RequireJS -->
+		<copy file="${requirejsPath}/require.min.js" tofile="${jotunheimenOutputDirectory}/require.js" />
+
+		<!-- Copy the built Jotunheimen assets and workers -->
+		<copy todir="${jotunheimenOutputDirectory}">
+			<fileset dir="${buildOutputDirectory}" excludes="Jotunheimen.js" />
+		</copy>
+
+		<!-- Copy web.config -->
+		<copy file="${basedir}/web.config" tofile="${jotunheimenOutputDirectory}/web.config" />
+
+		<!-- rewrite the paths in the configuration -->
+		<replace dir="${jotunheimenOutputDirectory}" summary="true">
+			<replacefilter token="../../Source" value="." />
+			<replacefilter token="../Apps/Jotunheimen" value="." />
+			<replacefilter token="../ThirdParty/requirejs-2.1.9" value="." />
+			<include name="JotunheimenStartup.js" />
+		</replace>
+
+		<!-- rewrite the paths in the HTML -->
+		<replace dir="${jotunheimenOutputDirectory}" summary="true">
+			<replacefilter token="../../ThirdParty/requirejs-2.1.9" value="." />
+			<include name="index.html" />
+		</replace>
+
+		<!-- rewrite the paths in the CSS -->
+		<replace dir="${jotunheimenOutputDirectory}" summary="true">
+			<replacefilter token="../../Source/" value="" />
+			<include name="*.css" />
+		</replace>
+	</target>
+
 </project>

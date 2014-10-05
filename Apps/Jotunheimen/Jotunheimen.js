@@ -3,15 +3,17 @@ define([
         'Widgets/Viewer/Viewer',
         'Core/Rectangle',
         'Core/CesiumTerrainProvider',
+        'Core/Color',
         'Scene/ImageryLayer',
-        'Scene/TileCoordinatesImageryProvider',
+        'Scene/SingleTileImageryProvider',
         'Scene/WebMercatorImageryProvider'
     ], function(
         Viewer,
         Rectangle,
         CesiumTerrainProvider,
+        Color,
         ImageryLayer,
-        TileCoordinatesImageryProvider,
+        SingleTileImageryProvider,
         WebMercatorImageryProvider) {
     "use strict";
 
@@ -43,9 +45,10 @@ define([
         timeline: false,
         navigationHelpButton: false,
         fullscreenElement: false,
-        terrainProvider: terrainProvider//,
-        //imageryProvider: imageryProvider//,
-        //imageryProvider: new TileCoordinatesImageryProvider()
+        terrainProvider: terrainProvider,
+        imageryProvider: new SingleTileImageryProvider({
+            url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII='
+        })
     });
 
     loadingIndicator.style.display = 'none';
@@ -55,7 +58,7 @@ define([
         camera = scene.camera;
 
     camera.viewRectangle(jotunheimen);
-
+    scene.globe.baseColor = Color.BLACK;
     scene.imageryLayers.add(new ImageryLayer(imageryProvider));
 
 });
